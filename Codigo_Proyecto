@@ -1,0 +1,99 @@
+#LIMPIEZA DE ARCHIVOS
+
+import pandas as pd
+import os
+
+# Definir la ruta de los archivos
+ruta_archivos = r'E:\DATOS USUARIO\ESCRITORIO\Codigos_Python\PROYECTO DE GRADO'
+
+# Especificar las columnas que se deben eliminar
+columnas_a_eliminar = ['Id_grupo', 'Id_grupo.1', 'Sede', 'Modalidad', 'Cod Unidad', 'Nombre Unidad', 'Pensum', 'Nivel',
+                       'Num_grupo', 'Grupooferta', 'Pensum Grupo', 'Bloque', 'Def 1er 30%', 'Nota 1', 'Nota 2',
+                       'Evaluacion', 'Def 2do 30%', 'Evaluacion', 'Def 3er 40%', 'Nota 1', 'Evaluacion',
+                       'Nota Unica', 'Nota 1.1', 'Nota 2.1', 'Evaluacion.1', 'Nota 1.2', 'Evaluacion.2']
+
+# Crear el directorio de salida si no existe
+directorio_salida = os.path.join(ruta_archivos, 'archivos_combinados')
+if not os.path.exists(directorio_salida):
+    os.makedirs(directorio_salida)
+
+# Combinar archivos por año
+for año in range(19, 24):
+    archivos_por_año = [os.path.join(ruta_archivos, f"{año}I{str(i).zfill(2)}.xlsx") for i in range(1, 7)]
+    dataframes_por_año = []
+
+    for archivo in archivos_por_año:
+        df = pd.read_excel(archivo)
+        dataframes_por_año.append(df)
+
+    # Concatenar los DataFrames del año
+    df_año_completo = pd.concat(dataframes_por_año, ignore_index=True)
+
+    # Eliminar las columnas no deseadas
+    df_año_completo = df_año_completo.drop(columns=columnas_a_eliminar)
+
+    # Guardar el DataFrame combinado del año
+    archivo_salida = os.path.join(directorio_salida, f"{año}_combinado.xlsx")
+    df_año_completo.to_excel(archivo_salida, index=False)
+
+    print(f"Archivos del año {año} combinados y columnas no deseadas eliminadas. Guardado en {archivo_salida}.")
+
+# Definir la ruta donde se encuentran los archivos combinados
+directorio_combinados = os.path.join(ruta_archivos, 'archivos_combinados')
+
+# Almacenar los DataFrames combinados de cada archivo
+dataframes_combinados = []
+
+# Leer los archivos combinados y agregarlos a la lista
+for archivo in os.listdir(directorio_combinados):
+    if archivo.endswith(".xlsx"):
+        ruta_archivo = os.path.join(directorio_combinados, archivo)
+        df = pd.read_excel(ruta_archivo)
+        dataframes_combinados.append(df)
+
+# Unir todos los DataFrames en uno solo
+df_total = pd.concat(dataframes_combinados, ignore_index=True)
+
+# Guardar el DataFrame total combinado
+archivo_total = os.path.join(directorio_combinados, "total_combinado.xlsx")
+df_total.to_excel(archivo_total, index=False)
+
+print(f"Todos los archivos combinados en uno solo y guardados en {archivo_total}.")
+
+
+
+_____________________________________________________________________________________________
+
+#CARGAR ARCHIVOS
+import pandas as pd
+
+# Rutas de los archivos
+ruta_total_combinado = r'E:\DATOS USUARIO\ESCRITORIO\Base de datos proyecto\total_combinado.xlsx'
+ruta_datos_estudiantes = r'E:\DATOS USUARIO\ESCRITORIO\Base de datos proyecto\datos_estudiantes.xlsx'
+
+# Cargar los datos
+df_total_combinado = pd.read_excel(ruta_total_combinado)
+df_datos_estudiantes = pd.read_excel(ruta_datos_estudiantes)
+
+# Ver las primeras filas de cada dataframe
+print(df_total_combinado.head())
+print(df_datos_estudiantes.head())
+
+#UNIR LAS BASES
+
+# Rutas 
+ruta_total_combinado = r'E:\DATOS USUARIO\ESCRITORIO\Base de datos proyecto\total_combinado.xlsx'
+ruta_datos_estudiantes = r'E:\DATOS USUARIO\ESCRITORIO\Base de datos proyecto\datos_estudiantes.xlsx'
+
+#Cargando BD
+df_total_combinado = pd.read_excel(ruta_total_combinado)
+df_datos_estudiantes = pd.read_excel(ruta_datos_estudiantes)
+
+# Unir BD
+df_completo = pd.merge(df_total_combinado, df_datos_estudiantes, 
+                       left_on=['Id_alum_programa', 'Cod_periodo'], 
+                       right_on=['Id_alum_programa', 'COD_PERIODO'])
+
+
+print(df_completo.head()
+
